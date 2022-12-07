@@ -7,6 +7,7 @@ import pickle
 
 result= dict()
 cnt = 0
+data = []
     
 def generate_coordinate(skel):
     
@@ -33,7 +34,7 @@ def generate_coordinate(skel):
 
     #초기화
     #차원 설명 두번째 frame개수, 세번째 joint 개수, 네번째 좌표 개수 (우리는 xy니까 2로 고정) 
-    frame_xy = np.zeros((1,len(pre),17,2)) ## 5-> int(pre[0][0]) 변환!! 필수!!
+    frame_xy = np.zeros((1,len(pre),17,2)).astype(np.float16) ## 5-> int(pre[0][0]) 변환!! 필수!!
 
     #인덱스 별로 탐색 진행
     #위치가 0~24 사이면 xy 좌표 추출임
@@ -72,13 +73,13 @@ def generate_coordinate(skel):
     anno['original_shape'] = (1080, 1920)
     anno['total_frames'] = int(pre[0][0])
     anno['keypoint'] = frame_xy
-    anno['keypoint_score'] = np.ones((1,5,17))
+    anno['keypoint_score'] = np.ones((1,5,17)).astype(np.float16)
 
     #마지막은 pkl에 저장하기
     #print(anno)
-    result[file_path] = anno
-    with open('test7.pkl','wb') as fw : 
-        pickle.dump(anno,fw)
+    data.append(anno)
+
+    
     
 
 
@@ -91,7 +92,7 @@ if __name__ == '__main__':
 
     
 
-        #json 파일들의 list를 불러와서 하나씩 json->skeleton으로 변환시키는 부분
+    #json 파일들의 list를 불러와서 하나씩 json->skeleton으로 변환시키는 부분
     with open(tmp, "r", encoding="utf8") as skeleton_list:
     
             #한줄 씩 입력받게 된다. ex) skeleton_content = EL_OE11_A64_013_L20M02_05_F.json
@@ -99,8 +100,9 @@ if __name__ == '__main__':
             skel = skel.replace('\n',"")
                 
             generate_coordinate(skel)
+
+
+    print(data)
+    with open('test7.pkl','wb') as fw : 
+        pickle.dump(data[0],fw)
     
-
-   
-
-        
